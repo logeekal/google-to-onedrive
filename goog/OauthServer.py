@@ -10,7 +10,6 @@ from apiclient.discovery import build
 from apiclient.http import MediaFileUpload as uploader
 from oauth2client.client import OAuth2WebServerFlow as oauth2
 from oauth2client.client  import FlowExchangeError as flexerror
-from oauth2client.client import Credentials as Creds_obj
 
 class GoogleSignIn:
 	"""
@@ -109,7 +108,6 @@ class GoogleSignIn:
 			print 'JSON Response - ', req.json()	
 		 
 			credentials['access_token']=req.json()['access_token']
-			credentials['token_response']['access_token'] = credentials['access_token'] 
 			for key in credentials['token_response'].keys():
 				if key in req:
 					credentials['token_response'][key] = req[key]
@@ -119,17 +117,10 @@ class GoogleSignIn:
 		return 1		 
 		
 		
-	def build_service(self, user_id):
-		http = httplib2.Http()
-		creds_json = self.get_stored_creds(user_id)
-		
-		self.refresh_token(creds_json, user_id)
-		
-		#Need to load credentials again after being refreshed.
-		creds_json = self.get_stored_creds(user_id)
-		credentials = Creds_obj.new_from_json(json.dumps(creds_json))
-		
+	def build_service(self):
+		http = http2lib.Http()
 		http = credentials.authorize(http)
+		
 		return build('drive','v2',http=http)
 	
 #goog = GoogleSignIn('drive')
